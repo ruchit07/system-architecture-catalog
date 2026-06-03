@@ -28,7 +28,23 @@ Key tactics:
 - **Dead-letter queue (DLQ)** — events that fail repeatedly go somewhere visible, not into a retry storm.
 - **Schema/versioning** — events are a contract; evolve them carefully.
 
-## What to look at (reference implementation)
-A producer/consumer pair with idempotency keys and a dead-letter queue, showing safe handling of duplicate delivery.
+## What to look at (runnable reference)
 
-> Implementation: scaffolded. See the [companion article](https://ruchitsuthar.com/blog/software-architecture/common-system-architectures-reference-catalog/); contributions welcome.
+This folder contains a **runnable** TypeScript example.
+
+- [`src/broker.ts`](./src/broker.ts) — a tiny in-memory broker that models the two facts that trip teams up: **at-least-once delivery** (the same event can arrive twice) and a **dead-letter queue** (events that fail `maxAttempts` times go somewhere visible instead of being dropped or retried forever).
+- [`src/consumer.ts`](./src/consumer.ts) — the payment consumer. Its two lines of defense are **idempotency** (remembers processed event IDs, skips duplicates) and recording the ID *with* the side effect (one transaction in prod).
+- [`src/consumer.test.ts`](./src/consumer.test.ts) — proves a redelivered event charges **once**, a poison message lands in the **DLQ**, and unrelated events are ignored.
+
+### Run it
+
+```bash
+cd event-driven
+npm install
+npm test     # 3 tests: idempotency, dead-lettering, type filtering
+npm start    # demo: a duplicated order + a poison message
+```
+
+The key line to read is the idempotency check in `consumer.ts` — that single guard is the difference between "resilient to the network" and "double-charges customers one in two thousand times."
+
+Companion article: [Event-Driven Architecture Without the Hype](https://ruchitsuthar.com/blog/software-architecture/event-driven-architecture-without-the-hype/).

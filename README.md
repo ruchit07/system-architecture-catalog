@@ -22,8 +22,8 @@ Ordered roughly by the complexity they introduce. Start at the top.
 |---|--------------|-------------|---------------|
 | 1 | [Layered (N-tier)](./layered) | Small domain, need to ship, want a structure everyone understands | Business logic leaking into controllers/DB; anemic domain |
 | 2 | [Modular Monolith](./modular-monolith) | **Default for most teams under ~30 engineers** — clean boundaries, no distribution tax | Boundaries not enforced → big ball of mud in a costume |
-| 3 | [Hexagonal (Ports & Adapters)](./hexagonal) | Complex, long-lived domain; infra you expect to change | Ceremony for a CRUD app |
-| 4 | [Event-Driven](./event-driven) | Genuinely independent, async reactions to the same fact | Can't reason by reading code; non-idempotent consumers |
+| 3 | [Hexagonal (Ports & Adapters)](./hexagonal) ✅ _runnable_ | Complex, long-lived domain; infra you expect to change | Ceremony for a CRUD app |
+| 4 | [Event-Driven](./event-driven) ✅ _runnable_ | Genuinely independent, async reactions to the same fact | Can't reason by reading code; non-idempotent consumers |
 | 5 | [CQRS + Event Sourcing](./cqrs-event-sourcing) | Asymmetric read/write; audit trail is a real requirement | Most over-applied "senior" pattern; eventual-consistency UX |
 | 6 | [Microservices](./microservices) | **30+ engineers**, multiple teams needing independent deploy cadence | Distributed monolith; services drawn on technical, not business, lines |
 | 7 | [Serverless / FaaS](./serverless) | Spiky, event-driven, low-baseline workloads | Cold starts; lock-in; cost flips at steady high throughput |
@@ -74,9 +74,10 @@ This is a living catalog (v0.1). The structure and READMEs are complete; referen
 
 - [x] Catalog structure + decision flowchart
 - [x] Per-architecture READMEs with diagrams and trade-offs
-- [x] ADR template
+- [x] ADR template + worked examples ([0001](./adr/0001-use-postgresql.md), [0002](./adr/0002-modular-monolith-over-microservices.md))
 - [x] Runnable hexagonal reference (TypeScript)
-- [ ] Runnable references for the remaining patterns
+- [x] Runnable event-driven reference (idempotent consumer + DLQ)
+- [ ] Runnable references for the remaining patterns (microservices saga next)
 - [ ] Language variants (Go, Java) for the most-requested patterns
 
 ## License
