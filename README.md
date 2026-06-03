@@ -25,7 +25,7 @@ Ordered roughly by the complexity they introduce. Start at the top.
 | 3 | [Hexagonal (Ports & Adapters)](./hexagonal) ✅ _runnable_ | Complex, long-lived domain; infra you expect to change | Ceremony for a CRUD app |
 | 4 | [Event-Driven](./event-driven) ✅ _runnable_ | Genuinely independent, async reactions to the same fact | Can't reason by reading code; non-idempotent consumers |
 | 5 | [CQRS + Event Sourcing](./cqrs-event-sourcing) | Asymmetric read/write; audit trail is a real requirement | Most over-applied "senior" pattern; eventual-consistency UX |
-| 6 | [Microservices](./microservices) | **30+ engineers**, multiple teams needing independent deploy cadence | Distributed monolith; services drawn on technical, not business, lines |
+| 6 | [Microservices](./microservices) ✅ _runnable_ | **30+ engineers**, multiple teams needing independent deploy cadence | Distributed monolith; services drawn on technical, not business, lines |
 | 7 | [Serverless / FaaS](./serverless) | Spiky, event-driven, low-baseline workloads | Cold starts; lock-in; cost flips at steady high throughput |
 | 8 | [Strangler Fig](./strangler-fig) | Migrating a legacy system without a big-bang rewrite | Stalls at 60%; two systems forever with no decommission date |
 
@@ -77,7 +77,8 @@ This is a living catalog (v0.1). The structure and READMEs are complete; referen
 - [x] ADR template + worked examples ([0001](./adr/0001-use-postgresql.md), [0002](./adr/0002-modular-monolith-over-microservices.md))
 - [x] Runnable hexagonal reference (TypeScript)
 - [x] Runnable event-driven reference (idempotent consumer + DLQ)
-- [ ] Runnable references for the remaining patterns (microservices saga next)
+- [x] Runnable microservices saga reference (compensation on failure)
+- [ ] Runnable references for the remaining patterns (layered, modular monolith, CQRS, serverless, strangler fig)
 - [ ] Language variants (Go, Java) for the most-requested patterns
 
 ## License

@@ -32,7 +32,23 @@ If no, you have a **distributed monolith** — all the cost of distribution, non
 - **Per-service database** — no shared schemas.
 - Async events for decoupling where a synchronous answer isn't required.
 
-## What to look at (reference implementation)
-Two services with a saga coordinating a cross-service workflow, fronted by an API gateway, each owning its own data store.
+## What to look at (runnable reference)
 
-> Implementation: scaffolded. See the [companion article](https://ruchitsuthar.com/blog/software-architecture/common-system-architectures-reference-catalog/); contributions welcome.
+This folder contains a **runnable** TypeScript saga — the alternative to the (impossible) distributed transaction across services that don't share a database.
+
+- [`src/saga.ts`](./src/saga.ts) — a generic `SagaOrchestrator`: each step has an `action` and a `compensate` (undo). If any step fails, it runs the compensations for the completed steps **in reverse order**.
+- [`src/order-saga.ts`](./src/order-saga.ts) — three independent services (payment, inventory, shipping), each owning its own state, wired into an order saga.
+- [`src/saga.test.ts`](./src/saga.test.ts) — proves the happy path completes, and that when shipping fails the payment is refunded and inventory released (state rolled back, no partial order left behind).
+
+### Run it
+
+```bash
+cd microservices
+npm install
+npm test     # happy path + two failure/compensation scenarios
+npm start    # demo: a successful order and a failed one that rolls back
+```
+
+The line to internalize: there is no distributed `BEGIN…COMMIT` across services. A saga gives you "all-or-nothing" by making every step's **undo** a first-class citizen.
+
+Companion article: [Event-Driven Architecture Without the Hype](https://ruchitsuthar.com/blog/software-architecture/event-driven-architecture-without-the-hype/) (choreography vs orchestration).
