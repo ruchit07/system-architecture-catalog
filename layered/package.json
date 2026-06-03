@@ -1,0 +1,16 @@
+{
+  "name": "layered-reference",
+  "version": "0.1.0",
+  "description": "Runnable layered (N-tier) reference with the dependency rule enforced.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "tsx --test src/layered.test.ts",
+    "start": "tsx src/index.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.0"
+  }
+}

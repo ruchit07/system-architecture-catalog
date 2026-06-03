@@ -1,6 +1,6 @@
 # Microservices
 
-The business is decomposed into independently deployable services, each owning its data and aligned to a **business capability**. They communicate over the network, sync or async.
+The business is decomposed into independently deployable services, each owning its data and aligned to a **business capability**. They communicate over the network, synchronously or asynchronously.
 
 ```mermaid
 flowchart TD
@@ -13,42 +13,49 @@ flowchart TD
     S1 -.async.-> Q{{Broker}} -.-> S2
 ```
 
-## Use it when
-The real driver is **organizational, not technical**: you have enough engineers (think 30+, multiple teams) that coordinating deploys in a single codebase has become the bottleneck. Microservices let independent teams own, deploy, and scale their piece on their own cadence. Independent scaling, fault isolation, and polyglot freedom are real but **secondary** benefits. Conway's Law is your design tool here.
+## Context & forces
 
-## How it goes wrong
-- Services drawn along **technical lines** (a "database service," an "auth service") instead of business capabilities — so every feature crosses boundaries.
-- **Distributed transactions** faked with no saga or compensation.
-- **Shared databases** that couple services through the back door.
+The real driver is **organizational, not technical**: enough engineers (think 30+, multiple teams) that coordinating deploys in one codebase has become the bottleneck. Microservices let independent teams own, deploy, and scale their piece on their own cadence — Conway's Law as a design tool. Independent scaling, fault isolation, and polyglot freedom are real but **secondary**. Below that organizational threshold, a [modular monolith](../modular-monolith) gives you the boundaries without the distribution tax.
 
-### The diagnostic question
-> *"Can a single team ship a meaningful feature in their service without coordinating a deploy with another team?"*
+## Quality-attribute profile
 
-If no, you have a **distributed monolith** — all the cost of distribution, none of the independence.
+| Attribute | Rating | Note |
+|---|:--:|---|
+| Scalability | ●●● | Scale each service independently |
+| Availability | ●●● | Fault isolation (with bulkheads/breakers) |
+| Team autonomy / evolvability | ●●● | Independent deploy cadence at scale |
+| Consistency | ●○○ | No cross-service transactions → sagas |
+| Operability | ●○○ | Distributed tracing, many pipelines, on-call surface |
+| Cost / time-to-market | ●○○ | High platform + cognitive overhead |
 
-## Essential supporting patterns
-- **Saga** for cross-service workflows (with compensation), instead of distributed transactions.
-- **API gateway** for a single entry point, auth, and routing.
-- **Per-service database** — no shared schemas.
-- Async events for decoupling where a synchronous answer isn't required.
+## Consequences & failure modes
+
+The pattern is routinely adopted prematurely, producing a **distributed monolith** — all the cost of distribution, none of the independence. Causes: services drawn on **technical** lines ("a database service," "an auth service") so every feature crosses boundaries; **distributed transactions** faked without a saga or compensation; **shared databases** that couple services through the back door. The diagnostic question for any proposed split: *"Can one team ship a meaningful feature in their service without coordinating a deploy with another team?"* If no, it's a distributed monolith.
+
+## Operational concerns (the prerequisites)
+
+You should not run microservices without: CI/CD per service, **distributed tracing** + centralized logging + per-service RED metrics, an **API gateway** (auth, routing, rate limiting), **per-service databases** (no shared schemas), **resilience patterns** ([circuit breakers, retries with backoff+jitter, bulkheads](https://ruchitsuthar.com/blog/software-architecture/caching-idempotency-retries-at-scale/)), and **sagas with compensation** for cross-service workflows. Missing these, the operational cost dwarfs the benefit.
+
+## Anti-patterns
+
+- **Distributed monolith** — services that must deploy together.
+- **Nanoservices** — so fine-grained that overhead exceeds the work done.
+- **Shared database** — back-door coupling.
+- **Microservices for a small team** — solving an org problem you don't have.
 
 ## What to look at (runnable reference)
 
-This folder contains a **runnable** TypeScript saga — the alternative to the (impossible) distributed transaction across services that don't share a database.
+A **saga** — the alternative to the (impossible) distributed transaction across services that don't share a database.
 
-- [`src/saga.ts`](./src/saga.ts) — a generic `SagaOrchestrator`: each step has an `action` and a `compensate` (undo). If any step fails, it runs the compensations for the completed steps **in reverse order**.
-- [`src/order-saga.ts`](./src/order-saga.ts) — three independent services (payment, inventory, shipping), each owning its own state, wired into an order saga.
-- [`src/saga.test.ts`](./src/saga.test.ts) — proves the happy path completes, and that when shipping fails the payment is refunded and inventory released (state rolled back, no partial order left behind).
-
-### Run it
+- [`src/saga.ts`](./src/saga.ts) — a generic `SagaOrchestrator`: each step has an action and a **compensation**; on failure, completed steps roll back **in reverse order**.
+- [`src/order-saga.ts`](./src/order-saga.ts) — three independent services (payment, inventory, shipping) wired into an order saga.
+- [`src/saga.test.ts`](./src/saga.test.ts) — happy path completes; when shipping fails, payment is refunded and inventory released (state rolled back, no partial order).
 
 ```bash
-cd microservices
-npm install
-npm test     # happy path + two failure/compensation scenarios
-npm start    # demo: a successful order and a failed one that rolls back
+cd microservices && npm install && npm test
 ```
 
-The line to internalize: there is no distributed `BEGIN…COMMIT` across services. A saga gives you "all-or-nothing" by making every step's **undo** a first-class citizen.
+## Related patterns & references
 
-Companion article: [Event-Driven Architecture Without the Hype](https://ruchitsuthar.com/blog/software-architecture/event-driven-architecture-without-the-hype/) (choreography vs orchestration).
+- Decompose from → [Modular Monolith](../modular-monolith); backbone → [Event-Driven](../event-driven); applied in [social-media](../examples/social-media) (full split) and [banking](../examples/banking) (saga only at external boundaries).
+- Sam Newman — *Building Microservices*; Chris Richardson — *Microservices Patterns* (saga, API gateway); Skelton & Pais — *Team Topologies*.

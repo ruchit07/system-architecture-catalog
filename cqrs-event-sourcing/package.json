@@ -1,0 +1,16 @@
+{
+  "name": "cqrs-event-sourcing-reference",
+  "version": "0.1.0",
+  "description": "Runnable CQRS + event sourcing: aggregate, event store, and two projections.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "tsx --test src/ledger.test.ts",
+    "start": "tsx src/index.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.0"
+  }
+}
