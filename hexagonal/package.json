@@ -1,0 +1,16 @@
+{
+  "name": "hexagonal-reference",
+  "version": "0.1.0",
+  "description": "Runnable hexagonal architecture (ports & adapters) reference — domain core tested with zero infrastructure.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "tsx --test src/domain.test.ts",
+    "start": "tsx src/index.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.0"
+  }
+}
