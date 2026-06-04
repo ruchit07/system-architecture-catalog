@@ -1,0 +1,16 @@
+{
+  "name": "multi-region-reference",
+  "version": "0.1.0",
+  "description": "Runnable residency-aware router for a multi-region SaaS (data residency + failover).",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "tsx --test src/residency.test.ts",
+    "start": "tsx src/index.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.0"
+  }
+}

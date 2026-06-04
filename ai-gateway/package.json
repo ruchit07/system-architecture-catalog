@@ -1,0 +1,16 @@
+{
+  "name": "ai-gateway-reference",
+  "version": "0.1.0",
+  "description": "Runnable AI Gateway: decouple your core from LLM providers with fallback, caching, budget caps, and guardrails.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "tsx --test src/gateway.test.ts",
+    "start": "tsx src/index.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.0"
+  }
+}
